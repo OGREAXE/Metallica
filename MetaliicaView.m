@@ -100,11 +100,6 @@
         1.0, 0.0, 0.0, 1.0
     };
     
-    
-//    GLKMatrix4 mv = GLKMatrix4Multiply( GLKMatrix4MakeTranslation(0, 0, -15.5), GLKMatrix4MakeRotation(M_PI_4 * 3, 0, 1, 0));
-    GLKMatrix4 mv = GLKMatrix4Multiply( GLKMatrix4MakeTranslation(0, 0, -15.5), GLKMatrix4MakeRotation(0, 0, 1, 0));
-    mv = GLKMatrix4Multiply( mv, GLKMatrix4MakeTranslation(0, 0, 15.5));
-    
     [self drawVertices:vertices colors:colors length:sizeof(vertices)];
     
 }
