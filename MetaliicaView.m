@@ -9,11 +9,7 @@
 #import "MetaliicaView.h"
 #import <Metal/Metal.h>
 #import <GLKit/GLKit.h>
-
-typedef struct tagMTLSceneMatrices {
-    GLKMatrix4 projectionMatrix;
-    GLKMatrix4 modelviewMatrix;
-} MTLSceneMatrices;
+#import "MCCamera.h"
 
 @interface MetaliicaView()
 
@@ -33,9 +29,11 @@ typedef struct tagMTLSceneMatrices {
 
 @property (nonatomic) id<CAMetalDrawable> frameDrawable;
 
-@property (nonatomic) MTLSceneMatrices sceneMatrcies;
+//@property (nonatomic) MCSceneMatrices sceneMatrcies;
 
 @property (nonatomic) id<MTLRenderCommandEncoder> renderEncoder;
+
+@property (nonatomic) MCCamera *camera;
 
 @end
 
@@ -66,6 +64,11 @@ typedef struct tagMTLSceneMatrices {
     mtlRenderPipelineDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
 
     _renderPipelineState = [mtlDevice newRenderPipelineStateWithDescriptor:mtlRenderPipelineDescriptor error:nil];
+    
+    double aspect = fabsf((self.frame.size.width) / (self.frame.size.height));
+    _camera = [MCCamera cameraWithFov:GLKMathDegreesToRadians(60.0) aspect:aspect near:1. far:20.];
+    _camera.position = GLKVector3Make(0, 0, 3);
+    [_camera lookAt:GLKVector3Make(0, 0, -1)];
 }
 
 - (void)drawPlanes{
@@ -75,49 +78,52 @@ typedef struct tagMTLSceneMatrices {
 //        -0.5, -0.5, 1.5, 1.0
 //    };
     
-    static float vertices[] = {
-        0.0, 5., -15.5, 1.0,
-        5., -5., -15.5, 1.0,
-        -5., -5., -15.5, 1.0
+    //x plane
+    float z = -15.;
+    float w = 3.;
+    float vertices[] = {
+        0., 0., z, 1.0,
+        w, w, z, 1.0,
+        0., w, z, 1.0,
+        
+        0., 0., z, 1.0,
+        w, 0., z, 1.0,
+        w, w, z, 1.0,
     };
-    
-//    static float vertices[] = {
-//        0.0, 5., -1.5, 1.0,
-//        5., -5., -1.5, 1.0,
-//        -5., -5., -1.5, 1.0
-//    };
 
     static float colors[] = {
-            1.0, 0.0, 0.0, 1.0,
-            0.0, 1.0, 0.0, 1.0,
-            0.0, 0.0, 1.0, 1.0
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0, 1.0
     };
     
     
-    GLKMatrix4 mv = GLKMatrix4Multiply( GLKMatrix4MakeTranslation(0, 0, -15.5), GLKMatrix4MakeRotation(M_PI_4 * 3, 0, 1, 0));
+//    GLKMatrix4 mv = GLKMatrix4Multiply( GLKMatrix4MakeTranslation(0, 0, -15.5), GLKMatrix4MakeRotation(M_PI_4 * 3, 0, 1, 0));
+    GLKMatrix4 mv = GLKMatrix4Multiply( GLKMatrix4MakeTranslation(0, 0, -15.5), GLKMatrix4MakeRotation(0, 0, 1, 0));
     mv = GLKMatrix4Multiply( mv, GLKMatrix4MakeTranslation(0, 0, 15.5));
     
-    [self drawVertices:vertices colors:colors length:sizeof(vertices) modelViewMatrix:mv];
+    [self drawVertices:vertices colors:colors length:sizeof(vertices)];
     
 }
 
-- (void)drawVertices:(float *)vertices colors:(float *)colors length:(int)length modelViewMatrix:(GLKMatrix4)mv{
-    [self createBufferWithVertices:vertices colors:colors length:length modelViewMatrix:mv];
+- (void)drawVertices:(float *)vertices colors:(float *)colors length:(int)length{
+    [self createBufferWithVertices:vertices colors:colors length:length];
     [self render];
 }
 
-- (void)createBufferWithVertices:(float *)vertices colors:(float *)colors length:(int)length modelViewMatrix:(GLKMatrix4)mv{
+- (void)createBufferWithVertices:(float *)vertices colors:(float *)colors length:(int)length{
     _vertexBuffer = [_metalDevice newBufferWithBytes:vertices length:length options:MTLResourceOptionCPUCacheModeDefault];
     
     _colorBuffer = [_metalDevice newBufferWithBytes:colors length:length options:MTLResourceOptionCPUCacheModeDefault];
     
-    double aspect = fabsf((self.frame.size.width) / (self.frame.size.height));
+    [self.camera updateMatrices];
     
-    _sceneMatrcies.modelviewMatrix = mv;
+    MCSceneMatrices matrices = self.camera.matrices;
     
-    _sceneMatrcies.projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(60.0), aspect, 1.0, 20.0);
-    
-    _uniformBuffer = [_metalDevice newBufferWithBytes:&_sceneMatrcies length:sizeof(_sceneMatrcies) options:MTLResourceOptionCPUCacheModeDefault];
+    _uniformBuffer = [_metalDevice newBufferWithBytes:&matrices length:sizeof(matrices) options:MTLResourceOptionCPUCacheModeDefault];
 }
 
 - (void)render{
@@ -140,7 +146,7 @@ typedef struct tagMTLSceneMatrices {
     [renderEncoder setVertexBuffer:_colorBuffer offset:0 atIndex:1];
     [renderEncoder setVertexBuffer:_uniformBuffer offset:0 atIndex:2];
     
-    [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
+    [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:_vertexBuffer.length];
     [renderEncoder endEncoding];
     
     [mtlCommandBuffer presentDrawable:_frameDrawable];
