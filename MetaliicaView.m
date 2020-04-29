@@ -67,8 +67,8 @@
     
     double aspect = fabsf((self.frame.size.width) / (self.frame.size.height));
     _camera = [MCCamera cameraWithFov:GLKMathDegreesToRadians(60.0) aspect:aspect near:1. far:20.];
-    _camera.position = GLKVector3Make(0, 0, 3);
-    [_camera lookAt:GLKVector3Make(0, 0, -1)];
+    _camera.position = GLKVector3Make(3, 3, 3);
+    [_camera lookAt:GLKVector3Make(0, 0, 0)];
 }
 
 - (void)drawPlanes{
@@ -78,20 +78,24 @@
 //        -0.5, -0.5, 1.5, 1.0
 //    };
     
-    //x plane
-    float z = -15.;
-    float w = 3.;
-    float vertices[] = {
-        0., 0., z, 1.0,
-        w, w, z, 1.0,
-        0., w, z, 1.0,
+    float vertBuf[1024];
+    float colorBuf[1024];
+    
+    //xy plane
+    float w = 1;
+    
+    //xy plane
+    float vertices0[] = {
+        0., 0., 0, 1.0,
+        w, w, 0, 1.0,
+        0., w, 0, 1.0,
         
-        0., 0., z, 1.0,
-        w, 0., z, 1.0,
-        w, w, z, 1.0,
+        0., 0., 0, 1.0,
+        w, 0., 0, 1.0,
+        w, w, 0, 1.0,
     };
 
-    static float colors[] = {
+    float colors0[] = {
         1.0, 0.0, 0.0, 1.0,
         1.0, 0.0, 0.0, 1.0,
         1.0, 0.0, 0.0, 1.0,
@@ -100,7 +104,57 @@
         1.0, 0.0, 0.0, 1.0
     };
     
-    [self drawVertices:vertices colors:colors length:sizeof(vertices)];
+    //xz plane
+    float vertices1[] = {
+        0., 0., 0, 1.0,
+        w, 0, w, 1.0,
+        0., 0, w, 1.0,
+        
+        0., 0., 0, 1.0,
+        w, 0., w, 1.0,
+        w, 0, 0, 1.0,
+    };
+
+    float colors1[] = {
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0
+    };
+    
+    //yz plane
+    float vertices2[] = {
+        0., 0., 0, 1.0,
+        0., w, w, 1.0,
+        0., 0., w, 1.0,
+        
+        0., 0., 0, 1.0,
+        0., w, w, 1.0,
+        0., w, 0, 1.0,
+    };
+
+    float colors2[] = {
+        0.0, 0.0, 1.0, 1.0,
+        0.0, 0.0, 1.0, 1.0,
+        0.0, 0.0, 1.0, 1.0,
+        0.0, 0.0, 1.0, 1.0,
+        0.0, 0.0, 1.0, 1.0,
+        0.0, 0.0, 1.0, 1.0
+    };
+    
+    int elementCount = 4 * 6;
+    
+    memcpy(vertBuf, vertices0, elementCount * sizeof(float));
+    memcpy(vertBuf + elementCount, vertices1, elementCount * sizeof(float));
+    memcpy(vertBuf + 2 * elementCount, vertices2, elementCount * sizeof(float));
+    
+    memcpy(colorBuf, colors0, elementCount * sizeof(float));
+    memcpy(colorBuf + elementCount, colors1, elementCount * sizeof(float));
+    memcpy(colorBuf + 2 * elementCount, colors2, elementCount * sizeof(float));
+    
+    [self drawVertices:vertBuf colors:colorBuf length:3 * elementCount * sizeof(float)];
     
 }
 
@@ -141,7 +195,17 @@
     [renderEncoder setVertexBuffer:_colorBuffer offset:0 atIndex:1];
     [renderEncoder setVertexBuffer:_uniformBuffer offset:0 atIndex:2];
     
-    [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:_vertexBuffer.length];
+//    [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:_vertexBuffer.length];
+    int vertCount = (_vertexBuffer.length/ sizeof(float))/4;
+    [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:vertCount];
+    
+    //index
+//    int indices[] = {0, 1, 2, 0, 1, 4, 6, 7, 8, 6, 7, 11};
+//    id<MTLBuffer> indexBuffer = [_metalDevice newBufferWithBytes:indices length:sizeof(int) * 12 options:MTLResourceOptionCPUCacheModeDefault];
+//    [renderEncoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle indexCount:12 indexType:MTLIndexTypeUInt32 indexBuffer:indexBuffer indexBufferOffset:0];
+
+    //
+    
     [renderEncoder endEncoding];
     
     [mtlCommandBuffer presentDrawable:_frameDrawable];

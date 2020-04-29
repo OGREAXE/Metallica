@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) GLKVector3 position;
 
-@property (nonatomic) GLKVector3 up;
+//@property (nonatomic) GLKVector3 up;
 
 @property (nonatomic, readonly) GLKVector3 lookAtPoint;
 
