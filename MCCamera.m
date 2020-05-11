@@ -20,7 +20,15 @@
     self = [super init];
     if (self) {
         MCSceneMatrices camMatrices;
-        camMatrices.projectionMatrix = GLKMatrix4MakePerspective(fov, aspect, near, far);
+        
+        GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(fov, aspect, near, far);
+        
+        //to cater to metal NDC space
+        GLKMatrix4 scaleMatrix = GLKMatrix4MakeScale(1, 1, 0.5);
+        GLKMatrix4 translateMatrix = GLKMatrix4MakeTranslation(0, 0, 0.5);
+        GLKMatrix4 transformMatrix = GLKMatrix4Multiply(translateMatrix, scaleMatrix);
+      
+        camMatrices.projectionMatrix = GLKMatrix4Multiply(transformMatrix, projectionMatrix);
         self.camMatrices = camMatrices;
     }
     return self;

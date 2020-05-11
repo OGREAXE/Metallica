@@ -126,7 +126,8 @@
     [_camera lookAt:GLKVector3Make(0, 0, 0)];
     
     _sun = [[MCDirectionalLight alloc] init];
-    _sun.direction = GLKVector3Make(-1, -1, -1);
+//    _sun.direction = GLKVector3Make(-1, -2.2, -1);
+    _sun.direction = GLKVector3Make(-1, -0.2, -1);
     
     {
         MTLTextureDescriptor *shadowTextureDesc =
@@ -170,39 +171,12 @@
     
     [self drawDirectionalLight:commandBuffer];
     
-    //[self drawPlanes:commandBuffer];
-    //[commandBuffer presentDrawable:_frameDrawable];
+    [self drawPlanes:commandBuffer];
+    [commandBuffer presentDrawable:_frameDrawable];
     
     [commandBuffer commit];
     
     [self debugDrawDepthMap];
-}
-
-- (void)debugDrawDepthMap{
-    {
-        GLKVector4 testV = GLKVector4Make(1, 0, -1, 1);
-        GLKVector4 testV_mvp = GLKMatrix4MultiplyVector4(_sun.matrices.modelviewMatrix, testV);
-        GLKVector4 testV_ndc = GLKMatrix4MultiplyVector4(_sun.matrices.projectionMatrix, testV_mvp);
-        NSLog(@"projected point is (%.5f, %.5f, %.5f)", testV_ndc.x, testV_ndc.y, testV_ndc.z);
-    }
-    //depth
-    float *depthBuf = (float *)malloc(sizeof(float) * 2048  * 2048);
-    memset(depthBuf, 0, sizeof(float) * 2048  * 2048);
-
-    [_sun.shadowMap getBytes:depthBuf bytesPerRow:sizeof(float) * 2048 fromRegion:MTLRegionMake2D(0, 0, 2048, 2048) mipmapLevel:0];
-    for (int i = 0; i < 2048 * 2048; i++) {
-        if (depthBuf[i] != 0) {
-            float k = depthBuf[i];
-            int x = 0;
-        }
-    }
-    
-    CGImageRef imageRef = [self imageRefFromBGRABytes:(unsigned char *)depthBuf imageSize:CGSizeMake(2048, 2048)];
-    UIImage *image = [UIImage imageWithCGImage:imageRef];
-    UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 60, 200, 200)];
-    imgView.image = image;
-    imgView.backgroundColor = [UIColor blueColor];
-    [self addSubview:imgView];
 }
 
 - (CGImageRef)imageRefFromBGRABytes:(unsigned char *)imageBytes imageSize:(CGSize)imageSize {
@@ -247,6 +221,45 @@
     [encoder endEncoding];
        
 //    [commandBuffer commit];
+}
+
+- (void)drawPlanes:(id<MTLCommandBuffer>)mtlCommandBuffer{
+    _frameDrawable = [_metalLayer nextDrawable];
+    
+    MTLRenderPassDescriptor *mtlRenderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+    mtlRenderPassDescriptor.colorAttachments[0].texture = _frameDrawable.texture;
+    mtlRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+    mtlRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(1.0, 1.0, 1.0, 1.0);
+    mtlRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+    
+    mtlRenderPassDescriptor.depthAttachment.texture = _depthTexture;
+    
+//    id<MTLCommandBuffer> mtlCommandBuffer = [_mtlCommandQueue commandBuffer];
+    id<MTLRenderCommandEncoder> renderEncoder = [mtlCommandBuffer renderCommandEncoderWithDescriptor:mtlRenderPassDescriptor];
+    
+    [renderEncoder setRenderPipelineState:_renderPipelineState];
+    [renderEncoder setDepthStencilState:_meshDepthStencilState];
+    
+    [self.camera updateMatrices];
+    _currentUniform.meshMatrices = self.camera.matrices;
+    
+    [renderEncoder setFragmentTexture:_sun.shadowMap atIndex:3];
+    
+    [self drawPlanesWithEncoder:renderEncoder];
+    
+    [renderEncoder endEncoding];
+    
+//    [mtlCommandBuffer presentDrawable:_frameDrawable];
+//    [mtlCommandBuffer commit];
+}
+
+- (void)drawPlanesWithEncoder:(id<MTLRenderCommandEncoder>)renderEncoder{
+    float w = 1;
+    [self drawPlane:GLKVector3Make(w/2, w/2, 0) width:w height:w normal:GLKVector3Make(0, 0, 1) color:UIColor.redColor encoder:renderEncoder]; //xy
+    [self drawPlane:GLKVector3Make(w/2, 0, w/2) width:w height:w normal:GLKVector3Make(0, 1, 0) color:UIColor.greenColor encoder:renderEncoder]; //xz
+    [self drawPlane:GLKVector3Make(0, w/2, w/2) width:w height:w normal:GLKVector3Make(1, 0, 0) color:UIColor.blueColor encoder:renderEncoder]; //yz
+    
+    [self drawPlane:GLKVector3Make(0, -2, 0) width:3 * w height:3 * w normal:GLKVector3Make(0, 1, 0) color:UIColor.magentaColor encoder:renderEncoder]; //ground
 }
 
 - (void)drawPlane:(GLKVector3)position width:(float)width height:(float)height normal:(GLKVector3)normal color:(UIColor *)color encoder:(id<MTLRenderCommandEncoder>)renderEncoder{
@@ -296,45 +309,6 @@
     };
     
     [self drawVertices:vertices colors:colors length:4 * 6 * sizeof(float) encoder:renderEncoder];
-}
-
-- (void)drawPlanes:(id<MTLCommandBuffer>)mtlCommandBuffer{
-    _frameDrawable = [_metalLayer nextDrawable];
-    
-    MTLRenderPassDescriptor *mtlRenderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
-    mtlRenderPassDescriptor.colorAttachments[0].texture = _frameDrawable.texture;
-    mtlRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-    mtlRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(1.0, 1.0, 1.0, 1.0);
-    mtlRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-    
-    mtlRenderPassDescriptor.depthAttachment.texture = _depthTexture;
-    
-//    id<MTLCommandBuffer> mtlCommandBuffer = [_mtlCommandQueue commandBuffer];
-    id<MTLRenderCommandEncoder> renderEncoder = [mtlCommandBuffer renderCommandEncoderWithDescriptor:mtlRenderPassDescriptor];
-    
-    [renderEncoder setRenderPipelineState:_renderPipelineState];
-    [renderEncoder setDepthStencilState:_meshDepthStencilState];
-    
-    [self.camera updateMatrices];
-    _currentUniform.meshMatrices = self.camera.matrices;
-    
-    [renderEncoder setFragmentTexture:_sun.shadowMap atIndex:3];
-    
-    [self drawPlanesWithEncoder:renderEncoder];
-    
-    [renderEncoder endEncoding];
-    
-//    [mtlCommandBuffer presentDrawable:_frameDrawable];
-//    [mtlCommandBuffer commit];
-}
-
-- (void)drawPlanesWithEncoder:(id<MTLRenderCommandEncoder>)renderEncoder{
-    float w = 1;
-    [self drawPlane:GLKVector3Make(w/2, w/2, 0) width:w height:w normal:GLKVector3Make(0, 0, 1) color:UIColor.redColor encoder:renderEncoder]; //xy
-    [self drawPlane:GLKVector3Make(w/2, 0, w/2) width:w height:w normal:GLKVector3Make(0, 1, 0) color:UIColor.greenColor encoder:renderEncoder]; //xz
-    [self drawPlane:GLKVector3Make(0, w/2, w/2) width:w height:w normal:GLKVector3Make(1, 0, 0) color:UIColor.blueColor encoder:renderEncoder]; //yz
-    
-    [self drawPlane:GLKVector3Make(0, -2, 0) width:3 * w height:3 * w normal:GLKVector3Make(0, 1, 0) color:UIColor.magentaColor encoder:renderEncoder]; //ground
 }
 
 - (void)drawVertices:(float *)vertices colors:(float *)colors length:(int)length encoder:(id<MTLRenderCommandEncoder>)renderEncoder{
@@ -404,5 +378,52 @@
     return _metalDevice;
 }
 
+- (void)debugDrawDepthMap{
+    {
+        GLKVector4 testV = GLKVector4Make(1, 0, -1, 1); //578
+//        GLKVector4 testV = GLKVector4Make(0, 0, -3, 1); //584
+        GLKVector4 testV_mvp = GLKMatrix4MultiplyVector4(_sun.matrices.modelviewMatrix, testV);
+        GLKVector4 testV_ndc = GLKMatrix4MultiplyVector4(_sun.matrices.projectionMatrix, testV_mvp);
+        NSLog(@"projected point is (%.5f, %.5f, %.5f, %.5f)", testV_ndc.x, testV_ndc.y, testV_ndc.z, testV_ndc.w);
+    }
+    //depth
+    float *depthBuf = (float *)malloc(sizeof(float) * 2048  * 2048);
+    memset(depthBuf, 0, sizeof(float) * 2048  * 2048);
+
+    [_sun.shadowMap getBytes:depthBuf bytesPerRow:sizeof(float) * 2048 fromRegion:MTLRegionMake2D(0, 0, 2048, 2048) mipmapLevel:0];
+    
+    float maxDetpth = 0, minDepth = 1;
+    for (int i = 0; i < 2048 * 2048; i++) {
+        float k = depthBuf[i];
+        if (k > maxDetpth && k != 1) {
+            maxDetpth = k;
+        }
+        if (k < minDepth && k != 0) {
+            minDepth = k;
+        }
+    }
+    
+    for (int i = 0; i < 2048 * 2048; i++) {
+        if (YES /*depthBuf[i] != 0 && depthBuf[i] != 1*/) {
+            float k = depthBuf[i];
+            
+            unsigned char *p = depthBuf + i;
+            
+            float decay = (maxDetpth - k)/(maxDetpth - minDepth);
+            
+            p[0] = (unsigned char)(256.0f * decay);
+            p[1] = (unsigned char)(256.0f * decay);
+            p[2] = (unsigned char)(256.0f * decay);
+            p[3] = 1;
+        }
+    }
+    
+    CGImageRef imageRef = [self imageRefFromBGRABytes:(unsigned char *)depthBuf imageSize:CGSizeMake(2048, 2048)];
+    UIImage *image = [UIImage imageWithCGImage:imageRef];
+    UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 60, 300, 300)];
+    imgView.image = image;
+    imgView.backgroundColor = [UIColor blackColor];
+    [self addSubview:imgView];
+}
 
 @end

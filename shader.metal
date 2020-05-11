@@ -37,8 +37,8 @@ vertex VertexOut vertexShader(device float4* position [[buffer(0)]],
     vert.position = uniform.meshMatrices.projectionMatrix * uniform.meshMatrices.viewModelMatrix * position[vid];
 //    vert.position = scene_matrices.projectionMatrix * position[vid];
 //    vert.position.z = 0;
-    vert.position = vert.position/vert.position[3];
-    vert.position.z = vert.position.z/2 + 0.5;
+//    vert.position = vert.position/vert.position[3];
+//    vert.position.z = vert.position.z/2 + 0.5;
     vert.color = color[vid];
     
     vert.shadow_coord = (uniform.shadowMatrices.projectionMatrix * uniform.shadowMatrices.viewModelMatrix * position[vid]).xyz;
