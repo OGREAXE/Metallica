@@ -30,7 +30,9 @@
     [super viewWillAppear:animated];
     
     _mtView.frame = self.view.bounds;
-    [_mtView drawPlanes];
+//    [_mtView drawPlanes];
+    
+    [_mtView renderView];
 }
 
 

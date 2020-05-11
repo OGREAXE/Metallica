@@ -11,6 +11,7 @@
 #import <GLKit/GLKit.h>
 #import "MCCamera.h"
 #import <math.h>
+#import "MCDirectionalLight.h"
 
 @interface MetaliicaView()
 
@@ -22,6 +23,12 @@
 
 @property (nonatomic) id<MTLRenderPipelineState> renderPipelineState;
 
+@property (nonatomic) id<MTLRenderPipelineState> shadowGenPipelineState;
+
+@property (nonatomic) id<MTLDepthStencilState> meshDepthStencilState;
+
+@property (nonatomic) id<MTLDepthStencilState> shadowDepthStencilState;
+
 @property (nonatomic) id<MTLBuffer> vertexBuffer;
 
 @property (nonatomic) id<MTLBuffer> colorBuffer;
@@ -30,11 +37,19 @@
 
 @property (nonatomic) id<CAMetalDrawable> frameDrawable;
 
+@property (nonatomic) id<MTLTexture> depthTexture;
+
 //@property (nonatomic) MCSceneMatrices sceneMatrcies;
 
 //@property (nonatomic) id<MTLRenderCommandEncoder> renderEncoder;
 
 @property (nonatomic) MCCamera *camera;
+
+@property (nonatomic) MCDirectionalLight *sun;
+
+//@property (nonatomic) MCSceneMatrices currentMatrices;
+
+@property (nonatomic) MCSceneUniform currentUniform;
 
 @end
 
@@ -57,19 +72,181 @@
     _mtlCommandQueue = [mtlDevice newCommandQueue];
 
     id<MTLLibrary> mtlLibrary = [mtlDevice newDefaultLibrary];
-    id<MTLFunction> vertexProgram = [mtlLibrary newFunctionWithName:@"vertexShader"];
-    id<MTLFunction> fragmentProgram = [mtlLibrary newFunctionWithName:@"fragmentShader"];
-    MTLRenderPipelineDescriptor *mtlRenderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-    [mtlRenderPipelineDescriptor setVertexFunction:vertexProgram];
-    [mtlRenderPipelineDescriptor setFragmentFunction:fragmentProgram];
-    mtlRenderPipelineDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+    
+    NSError *error;
+    
+    {
+        id<MTLFunction> vertexProgram = [mtlLibrary newFunctionWithName:@"vertexShader"];
+        id<MTLFunction> fragmentProgram = [mtlLibrary newFunctionWithName:@"fragmentShader"];
+        
+        MTLRenderPipelineDescriptor *mtlRenderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+        [mtlRenderPipelineDescriptor setVertexFunction:vertexProgram];
+        [mtlRenderPipelineDescriptor setFragmentFunction:fragmentProgram];
+        mtlRenderPipelineDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+        mtlRenderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatDepth32Float;
 
-    _renderPipelineState = [mtlDevice newRenderPipelineStateWithDescriptor:mtlRenderPipelineDescriptor error:nil];
+        _renderPipelineState = [mtlDevice newRenderPipelineStateWithDescriptor:mtlRenderPipelineDescriptor error:nil];
+    }
+    
+    {
+        //shadow gen
+        id <MTLFunction> shadowVertexFunction = [mtlLibrary newFunctionWithName:@"shadow_vertex"];
+
+        MTLRenderPipelineDescriptor *renderPipelineDescriptor = [MTLRenderPipelineDescriptor new];
+        renderPipelineDescriptor.label = @"Shadow Gen";
+        renderPipelineDescriptor.vertexDescriptor = nil;
+        renderPipelineDescriptor.vertexFunction = shadowVertexFunction;
+        renderPipelineDescriptor.fragmentFunction = nil;
+        renderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatDepth32Float;
+
+        _shadowGenPipelineState = [mtlDevice newRenderPipelineStateWithDescriptor:renderPipelineDescriptor error:&error];
+    }
+    
+    {
+        MTLDepthStencilDescriptor *depthStateDesc = [MTLDepthStencilDescriptor new];
+        depthStateDesc.label = @"Shadow Gen";
+//        depthStateDesc.depthCompareFunction = MTLCompareFunctionGreaterEqual;
+        depthStateDesc.depthCompareFunction = MTLCompareFunctionLessEqual;
+        depthStateDesc.depthWriteEnabled = YES;
+        _shadowDepthStencilState = [mtlDevice newDepthStencilStateWithDescriptor:depthStateDesc];
+    }
+    
+    {
+        MTLDepthStencilDescriptor *depthStateDesc = [MTLDepthStencilDescriptor new];
+        depthStateDesc.label = @"mesh render";
+//        depthStateDesc.depthCompareFunction = MTLCompareFunctionGreaterEqual;
+        depthStateDesc.depthCompareFunction = MTLCompareFunctionLessEqual;
+        depthStateDesc.depthWriteEnabled = YES;
+        _meshDepthStencilState = [mtlDevice newDepthStencilStateWithDescriptor:depthStateDesc];
+    }
     
     double aspect = fabsf((self.frame.size.width) / (self.frame.size.height));
     _camera = [MCCamera cameraWithFov:GLKMathDegreesToRadians(60.0) aspect:aspect near:1. far:20.];
-    _camera.position = GLKVector3Make(3, 3, 3);
+    _camera.position = GLKVector3Make(3, 2, 3);
     [_camera lookAt:GLKVector3Make(0, 0, 0)];
+    
+    _sun = [[MCDirectionalLight alloc] init];
+    _sun.direction = GLKVector3Make(-1, -1, -1);
+    
+    {
+        MTLTextureDescriptor *shadowTextureDesc =
+            [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatDepth32Float
+                                                               width:2048
+                                                              height:2048
+                                                           mipmapped:NO];
+        
+        shadowTextureDesc.resourceOptions = MTLResourceStorageModeShared;
+        shadowTextureDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
+        
+        _sun.shadowMap = [self.metalDevice newTextureWithDescriptor:shadowTextureDesc];
+        _sun.shadowMap.label = @"Shadow Map";
+    }
+    
+    {
+        MTLTextureDescriptor *depthTextureDesc =
+        [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatDepth32Float
+                                                           width:2048
+                                                          height:2048
+                                                       mipmapped:NO];
+
+        depthTextureDesc.resourceOptions = MTLResourceStorageModePrivate;
+        depthTextureDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
+        
+        _depthTexture = [self.metalDevice newTextureWithDescriptor:depthTextureDesc];
+        _depthTexture.label = @"depth texture";
+    }
+    
+    
+//    CIImage *image = [CIImage imageWithMTLTexture:_sun.shadowMap options:nil];
+//    UIImage *uiImg = [UIImage imageWithCIImage:image];
+//
+//    UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 10, 100, 100)];
+//    imgView.image = uiImg;
+//    [self addSubview:imgView];
+}
+
+- (void)renderView{
+    id<MTLCommandBuffer> commandBuffer = [_mtlCommandQueue commandBuffer];
+    
+    [self drawDirectionalLight:commandBuffer];
+    
+    //[self drawPlanes:commandBuffer];
+    //[commandBuffer presentDrawable:_frameDrawable];
+    
+    [commandBuffer commit];
+    
+    [self debugDrawDepthMap];
+}
+
+- (void)debugDrawDepthMap{
+    {
+        GLKVector4 testV = GLKVector4Make(1, 0, -1, 1);
+        GLKVector4 testV_mvp = GLKMatrix4MultiplyVector4(_sun.matrices.modelviewMatrix, testV);
+        GLKVector4 testV_ndc = GLKMatrix4MultiplyVector4(_sun.matrices.projectionMatrix, testV_mvp);
+        NSLog(@"projected point is (%.5f, %.5f, %.5f)", testV_ndc.x, testV_ndc.y, testV_ndc.z);
+    }
+    //depth
+    float *depthBuf = (float *)malloc(sizeof(float) * 2048  * 2048);
+    memset(depthBuf, 0, sizeof(float) * 2048  * 2048);
+
+    [_sun.shadowMap getBytes:depthBuf bytesPerRow:sizeof(float) * 2048 fromRegion:MTLRegionMake2D(0, 0, 2048, 2048) mipmapLevel:0];
+    for (int i = 0; i < 2048 * 2048; i++) {
+        if (depthBuf[i] != 0) {
+            float k = depthBuf[i];
+            int x = 0;
+        }
+    }
+    
+    CGImageRef imageRef = [self imageRefFromBGRABytes:(unsigned char *)depthBuf imageSize:CGSizeMake(2048, 2048)];
+    UIImage *image = [UIImage imageWithCGImage:imageRef];
+    UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 60, 200, 200)];
+    imgView.image = image;
+    imgView.backgroundColor = [UIColor blueColor];
+    [self addSubview:imgView];
+}
+
+- (CGImageRef)imageRefFromBGRABytes:(unsigned char *)imageBytes imageSize:(CGSize)imageSize {
+ 
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef context = CGBitmapContextCreate(imageBytes,
+                                                imageSize.width,
+                                                imageSize.height,
+                                                8,
+                                                imageSize.width * 4,
+                                                colorSpace,
+                                                kCGBitmapByteOrder32Little | kCGImageAlphaPremultipliedFirst);
+    CGImageRef imageRef = CGBitmapContextCreateImage(context);
+    CGContextRelease(context);
+    CGColorSpaceRelease(colorSpace);
+    
+    return imageRef;
+}
+
+- (void)drawDirectionalLight:(id<MTLCommandBuffer>)commandBuffer{
+    MTLRenderPassDescriptor *shadowRenderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+    
+    shadowRenderPassDescriptor.depthAttachment.texture = _sun.shadowMap;
+    shadowRenderPassDescriptor.depthAttachment.loadAction = MTLLoadActionClear;
+    shadowRenderPassDescriptor.depthAttachment.storeAction = MTLStoreActionStore;
+    shadowRenderPassDescriptor.depthAttachment.clearDepth = 1.0;
+    
+//    id<MTLCommandBuffer> commandBuffer = [_mtlCommandQueue commandBuffer];
+    
+    id<MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:shadowRenderPassDescriptor];
+    
+    [encoder setRenderPipelineState:_shadowGenPipelineState];
+    [encoder setDepthStencilState:_shadowDepthStencilState];
+//    [encoder setCullMode: MTLCullModeBack];
+//    [encoder setDepthBias:0.015 slopeScale:7 clamp:0.02];
+    
+    [self.sun updateMatrices];
+    _currentUniform.shadowMatrices = self.sun.matrices;
+    
+    [self drawPlanesWithEncoder:encoder];
+    
+    [encoder endEncoding];
+       
+//    [commandBuffer commit];
 }
 
 - (void)drawPlane:(GLKVector3)position width:(float)width height:(float)height normal:(GLKVector3)normal color:(UIColor *)color encoder:(id<MTLRenderCommandEncoder>)renderEncoder{
@@ -121,7 +298,7 @@
     [self drawVertices:vertices colors:colors length:4 * 6 * sizeof(float) encoder:renderEncoder];
 }
 
-- (void)drawPlanes{
+- (void)drawPlanes:(id<MTLCommandBuffer>)mtlCommandBuffer{
     _frameDrawable = [_metalLayer nextDrawable];
     
     MTLRenderPassDescriptor *mtlRenderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
@@ -130,109 +307,35 @@
     mtlRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(1.0, 1.0, 1.0, 1.0);
     mtlRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
     
-    id<MTLCommandBuffer> mtlCommandBuffer = [_mtlCommandQueue commandBuffer];
+    mtlRenderPassDescriptor.depthAttachment.texture = _depthTexture;
+    
+//    id<MTLCommandBuffer> mtlCommandBuffer = [_mtlCommandQueue commandBuffer];
     id<MTLRenderCommandEncoder> renderEncoder = [mtlCommandBuffer renderCommandEncoderWithDescriptor:mtlRenderPassDescriptor];
     
     [renderEncoder setRenderPipelineState:_renderPipelineState];
+    [renderEncoder setDepthStencilState:_meshDepthStencilState];
     
+    [self.camera updateMatrices];
+    _currentUniform.meshMatrices = self.camera.matrices;
+    
+    [renderEncoder setFragmentTexture:_sun.shadowMap atIndex:3];
+    
+    [self drawPlanesWithEncoder:renderEncoder];
+    
+    [renderEncoder endEncoding];
+    
+//    [mtlCommandBuffer presentDrawable:_frameDrawable];
+//    [mtlCommandBuffer commit];
+}
+
+- (void)drawPlanesWithEncoder:(id<MTLRenderCommandEncoder>)renderEncoder{
     float w = 1;
     [self drawPlane:GLKVector3Make(w/2, w/2, 0) width:w height:w normal:GLKVector3Make(0, 0, 1) color:UIColor.redColor encoder:renderEncoder]; //xy
     [self drawPlane:GLKVector3Make(w/2, 0, w/2) width:w height:w normal:GLKVector3Make(0, 1, 0) color:UIColor.greenColor encoder:renderEncoder]; //xz
     [self drawPlane:GLKVector3Make(0, w/2, w/2) width:w height:w normal:GLKVector3Make(1, 0, 0) color:UIColor.blueColor encoder:renderEncoder]; //yz
     
-    [renderEncoder endEncoding];
-    
-    [mtlCommandBuffer presentDrawable:_frameDrawable];
-    [mtlCommandBuffer commit];
-//    [self commitBuffer];
+    [self drawPlane:GLKVector3Make(0, -2, 0) width:3 * w height:3 * w normal:GLKVector3Make(0, 1, 0) color:UIColor.magentaColor encoder:renderEncoder]; //ground
 }
-
-//- (void)drawPlanes_{
-////    static float vertices[] = {
-////        0.0, 0.5, 1.5, 1.0,
-////        0.5, -0.5, 1.5, 1.0,
-////        -0.5, -0.5, 1.5, 1.0
-////    };
-//
-//    float vertBuf[1024];
-//    float colorBuf[1024];
-//
-//    //xy plane
-//    float w = 1;
-//
-//    //xy plane
-//    float vertices0[] = {
-//        0., 0., 0, 1.0,
-//        w, w, 0, 1.0,
-//        0., w, 0, 1.0,
-//
-//        0., 0., 0, 1.0,
-//        w, 0., 0, 1.0,
-//        w, w, 0, 1.0,
-//    };
-//
-//    float colors0[] = {
-//        1.0, 0.0, 0.0, 1.0,
-//        1.0, 0.0, 0.0, 1.0,
-//        1.0, 0.0, 0.0, 1.0,
-//        1.0, 0.0, 0.0, 1.0,
-//        1.0, 0.0, 0.0, 1.0,
-//        1.0, 0.0, 0.0, 1.0
-//    };
-//
-//    //xz plane
-//    float vertices1[] = {
-//        0., 0., 0, 1.0,
-//        w, 0, w, 1.0,
-//        0., 0, w, 1.0,
-//
-//        0., 0., 0, 1.0,
-//        w, 0., w, 1.0,
-//        w, 0, 0, 1.0,
-//    };
-//
-//    float colors1[] = {
-//        0.0, 1.0, 0.0, 1.0,
-//        0.0, 1.0, 0.0, 1.0,
-//        0.0, 1.0, 0.0, 1.0,
-//        0.0, 1.0, 0.0, 1.0,
-//        0.0, 1.0, 0.0, 1.0,
-//        0.0, 1.0, 0.0, 1.0
-//    };
-//
-//    //yz plane
-//    float vertices2[] = {
-//        0., 0., 0, 1.0,
-//        0., w, w, 1.0,
-//        0., 0., w, 1.0,
-//
-//        0., 0., 0, 1.0,
-//        0., w, w, 1.0,
-//        0., w, 0, 1.0,
-//    };
-//
-//    float colors2[] = {
-//        0.0, 0.0, 1.0, 1.0,
-//        0.0, 0.0, 1.0, 1.0,
-//        0.0, 0.0, 1.0, 1.0,
-//        0.0, 0.0, 1.0, 1.0,
-//        0.0, 0.0, 1.0, 1.0,
-//        0.0, 0.0, 1.0, 1.0
-//    };
-//
-//    int elementCount = 4 * 6;
-//
-//    memcpy(vertBuf, vertices0, elementCount * sizeof(float));
-//    memcpy(vertBuf + elementCount, vertices1, elementCount * sizeof(float));
-//    memcpy(vertBuf + 2 * elementCount, vertices2, elementCount * sizeof(float));
-//
-//    memcpy(colorBuf, colors0, elementCount * sizeof(float));
-//    memcpy(colorBuf + elementCount, colors1, elementCount * sizeof(float));
-//    memcpy(colorBuf + 2 * elementCount, colors2, elementCount * sizeof(float));
-//
-//    [self drawVertices:vertBuf colors:colorBuf length:3 * elementCount * sizeof(float)];
-//
-//}
 
 - (void)drawVertices:(float *)vertices colors:(float *)colors length:(int)length encoder:(id<MTLRenderCommandEncoder>)renderEncoder{
     [self createBufferWithVertices:vertices colors:colors length:length];
@@ -244,11 +347,7 @@
     
     _colorBuffer = [_metalDevice newBufferWithBytes:colors length:length options:MTLResourceOptionCPUCacheModeDefault];
     
-    [self.camera updateMatrices];
-    
-    MCSceneMatrices matrices = self.camera.matrices;
-    
-    _uniformBuffer = [_metalDevice newBufferWithBytes:&matrices length:sizeof(matrices) options:MTLResourceOptionCPUCacheModeDefault];
+    _uniformBuffer = [_metalDevice newBufferWithBytes:&_currentUniform length:sizeof(_currentUniform) options:MTLResourceOptionCPUCacheModeDefault];
 }
 
 - (void)render:(id<MTLRenderCommandEncoder>)renderEncoder{

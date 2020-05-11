@@ -41,7 +41,8 @@
 
 - (void)updateMatrices{
     GLKVector3 lookAtDirection = GLKVector3Subtract(_lookAtPoint, _position);
-    float cam_harizontal_vec_z =  (-1 - lookAtDirection.x)/lookAtDirection.z;
+//    float cam_harizontal_vec_z =  (-1 - lookAtDirection.x)/lookAtDirection.z;
+    float cam_harizontal_vec_z =  (-lookAtDirection.x)/lookAtDirection.z;
 //    lookAtDirection.x * 1 + lookAtDirection.z * z = -1;
     GLKVector3 camHoriVec = {1, 0, cam_harizontal_vec_z};
     GLKVector3 fixedUp = GLKVector3CrossProduct(camHoriVec, lookAtDirection);

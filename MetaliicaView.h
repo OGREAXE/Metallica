@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MetaliicaView : UIView
 
-- (void)drawPlanes;
+- (void)renderView;
 
 @end
 

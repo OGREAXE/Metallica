@@ -14,6 +14,11 @@ typedef struct tagMTLSceneMatrices {
     GLKMatrix4 modelviewMatrix;
 } MCSceneMatrices;
 
+typedef struct tagSceneUniform {
+    MCSceneMatrices meshMatrices;
+    MCSceneMatrices shadowMatrices;
+} MCSceneUniform;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MCCamera : NSObject
