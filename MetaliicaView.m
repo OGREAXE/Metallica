@@ -122,12 +122,12 @@
     
     double aspect = fabsf((self.frame.size.width) / (self.frame.size.height));
     _camera = [MCCamera cameraWithFov:GLKMathDegreesToRadians(60.0) aspect:aspect near:1. far:20.];
-    _camera.position = GLKVector3Make(3, 2, 3);
+    _camera.position = GLKVector3Make(3, 1.5, 3);
     [_camera lookAt:GLKVector3Make(0, 0, 0)];
     
     _sun = [[MCDirectionalLight alloc] init];
-//    _sun.direction = GLKVector3Make(-1, -2.2, -1);
-    _sun.direction = GLKVector3Make(-1, -0.2, -1);
+    _sun.direction = GLKVector3Make(-1, -2.2, -1);
+//    _sun.direction = GLKVector3Make(0.1, -2, 2.5);
     
     {
         MTLTextureDescriptor *shadowTextureDesc =
@@ -210,8 +210,7 @@
     
     [encoder setRenderPipelineState:_shadowGenPipelineState];
     [encoder setDepthStencilState:_shadowDepthStencilState];
-//    [encoder setCullMode: MTLCullModeBack];
-//    [encoder setDepthBias:0.015 slopeScale:7 clamp:0.02];
+    [encoder setDepthBias:0.015 slopeScale:7 clamp:0.02]; //will display incorrect shadow glitch without this line
     
     [self.sun updateMatrices];
     _currentUniform.shadowMatrices = self.sun.matrices;
@@ -219,8 +218,6 @@
     [self drawPlanesWithEncoder:encoder];
     
     [encoder endEncoding];
-       
-//    [commandBuffer commit];
 }
 
 - (void)drawPlanes:(id<MTLCommandBuffer>)mtlCommandBuffer{
@@ -244,6 +241,7 @@
     _currentUniform.meshMatrices = self.camera.matrices;
     
     [renderEncoder setFragmentTexture:_sun.shadowMap atIndex:3];
+    [renderEncoder setFragmentBuffer:_uniformBuffer offset:0 atIndex:1];
     
     [self drawPlanesWithEncoder:renderEncoder];
     
@@ -380,7 +378,7 @@
 
 - (void)debugDrawDepthMap{
     {
-        GLKVector4 testV = GLKVector4Make(1, 0, -1, 1); //578
+        GLKVector4 testV = GLKVector4Make(-1, 0, 1, 1); //578
 //        GLKVector4 testV = GLKVector4Make(0, 0, -3, 1); //584
         GLKVector4 testV_mvp = GLKMatrix4MultiplyVector4(_sun.matrices.modelviewMatrix, testV);
         GLKVector4 testV_ndc = GLKMatrix4MultiplyVector4(_sun.matrices.projectionMatrix, testV_mvp);
@@ -403,6 +401,8 @@
         }
     }
     
+    NSLog(@"max depth is %.5f, min depth is %.5f", maxDetpth, minDepth);
+    
     for (int i = 0; i < 2048 * 2048; i++) {
         if (YES /*depthBuf[i] != 0 && depthBuf[i] != 1*/) {
             float k = depthBuf[i];
@@ -420,7 +420,7 @@
     
     CGImageRef imageRef = [self imageRefFromBGRABytes:(unsigned char *)depthBuf imageSize:CGSizeMake(2048, 2048)];
     UIImage *image = [UIImage imageWithCGImage:imageRef];
-    UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 60, 300, 300)];
+    UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 60, 200, 200)];
     imgView.image = image;
     imgView.backgroundColor = [UIColor blackColor];
     [self addSubview:imgView];

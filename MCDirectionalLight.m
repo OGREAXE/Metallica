@@ -26,11 +26,8 @@
         GLKMatrix4 projectionMatrix = GLKMatrix4MakeOrtho(-3, 3, -3, 3, -100, 100);
         
         //to cater to metal NDC space
-//        GLKMatrix4 shadowScale = GLKMatrix4MakeScale(0.5f, -0.5f, 1.0);
-//        GLKMatrix4 shadowTranslate = GLKMatrix4MakeTranslation(0.5, 0.5, 0);
-//        GLKMatrix4 shadowTransform = GLKMatrix4Multiply(shadowTranslate, shadowScale);
-        GLKMatrix4 shadowScale = GLKMatrix4MakeScale(1, 1, 0.5);
-        GLKMatrix4 shadowTranslate = GLKMatrix4MakeTranslation(0, 0, 0.5);
+        GLKMatrix4 shadowScale = GLKMatrix4MakeScale(1, 1, 1);
+        GLKMatrix4 shadowTranslate = GLKMatrix4MakeTranslation(0.0, 0.0, 0.0);
         GLKMatrix4 shadowTransform = GLKMatrix4Multiply(shadowTranslate, shadowScale);
         
         camMatrices.projectionMatrix = GLKMatrix4Multiply(shadowTransform, projectionMatrix);
