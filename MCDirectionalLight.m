@@ -13,6 +13,8 @@
 
 @property (nonatomic) MCSceneMatrices camMatrices;
 
+@property (nonatomic) GLKVector3 lastHorizontalVec; //in case the cross product is zero
+
 @end
 
 @implementation MCDirectionalLight
@@ -33,6 +35,8 @@
         camMatrices.projectionMatrix = GLKMatrix4Multiply(shadowTransform, projectionMatrix);
         
         self.camMatrices = camMatrices;
+        
+        _lastHorizontalVec = GLKVector3Make(1, 0, 0);
     }
     return self;
 }
@@ -41,12 +45,34 @@
     return self.camMatrices;
 }
 
+//- (void)updateMatrices{
+////    float cam_harizontal_vec_z =  (-1 - _direction.x)/_direction.z;
+//    float cam_harizontal_vec_z = (_direction.z == 0)?1:(-_direction.x)/_direction.z;
+//    float cam_harizontal_vec_x = (_direction.z == 0)?0:1;
+////    lookAtDirection.x * 1 + lookAtDirection.z * z = -1;
+//    GLKVector3 camHoriVec = {cam_harizontal_vec_x, 0, cam_harizontal_vec_z};
+//    GLKVector3 fixedUp = GLKVector3CrossProduct(camHoriVec, _direction);
+//
+//    GLKVector3 position = GLKVector3Negate(_direction);
+//    position = GLKVector3MultiplyScalar(position, 6);
+//    GLKMatrix4 mv = GLKMatrix4MakeLookAt(position.x, position.y, position.z, 0, 0, 0, fixedUp.x, fixedUp.y, fixedUp.z);
+//
+//    MCSceneMatrices matrcies = self.camMatrices;
+//    matrcies.modelviewMatrix = mv;
+//
+//    self.camMatrices = matrcies;
+//}
+
 - (void)updateMatrices{
-//    float cam_harizontal_vec_z =  (-1 - _direction.x)/_direction.z;
-    float cam_harizontal_vec_z = (_direction.z == 0)?1:(-_direction.x)/_direction.z;
-    float cam_harizontal_vec_x = (_direction.z == 0)?0:1;
-//    lookAtDirection.x * 1 + lookAtDirection.z * z = -1;
-    GLKVector3 camHoriVec = {cam_harizontal_vec_x, 0, cam_harizontal_vec_z};
+    GLKVector3 camHoriVec = GLKVector3CrossProduct(GLKVector3Make(0, 1, 0), _direction);
+    
+    if (camHoriVec.x == 0 && camHoriVec.z == 0 ) {
+        //looking up or down vertically
+        camHoriVec = _lastHorizontalVec;
+    }
+    
+    _lastHorizontalVec = camHoriVec;
+    
     GLKVector3 fixedUp = GLKVector3CrossProduct(camHoriVec, _direction);
     
     GLKVector3 position = GLKVector3Negate(_direction);

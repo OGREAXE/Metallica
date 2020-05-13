@@ -122,12 +122,13 @@
     
     double aspect = fabsf((self.frame.size.width) / (self.frame.size.height));
     _camera = [MCCamera cameraWithFov:GLKMathDegreesToRadians(60.0) aspect:aspect near:1. far:20.];
-//    _camera.position = GLKVector3Make(3, 1.5, 3);
-    _camera.position = GLKVector3Make(0, 10, 0);
+    _camera.position = GLKVector3Make(3, 1.5, 3);
+//    _camera.position = GLKVector3Make(0, 10, 0);
     [_camera lookAt:GLKVector3Make(0, 0, 0)];
     
     _sun = [[MCDirectionalLight alloc] init];
     _sun.direction = GLKVector3Make(-1, -2.2, -1);
+    _sun.direction = GLKVector3Make(0.01, -2.2, 0.01);
 //    _sun.direction = GLKVector3Make(0.1, -2, 2.5);
     
     {

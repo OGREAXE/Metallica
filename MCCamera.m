@@ -51,20 +51,6 @@
     _lookAtPoint = point;
 }
 
-- (void)updateMatrices_{
-    GLKVector3 lookAtDirection = GLKVector3Subtract(_lookAtPoint, _position);
-//    float cam_harizontal_vec_z =  (-1 - lookAtDirection.x)/lookAtDirection.z;
-    float cam_harizontal_vec_z =  (-lookAtDirection.x)/lookAtDirection.z;
-//    lookAtDirection.x * 1 + lookAtDirection.z * z = -1;
-    GLKVector3 camHoriVec = {1, 0, cam_harizontal_vec_z};
-    GLKVector3 fixedUp = GLKVector3CrossProduct(camHoriVec, lookAtDirection);
-    GLKMatrix4 mv = GLKMatrix4MakeLookAt(_position.x, _position.y, _position.z, _lookAtPoint.x, _lookAtPoint.y, _lookAtPoint.z, fixedUp.x, fixedUp.y, fixedUp.z);
-    
-    MCSceneMatrices matrcies = self.camMatrices;
-    matrcies.modelviewMatrix = mv;
-    self.camMatrices = matrcies;
-}
-
 - (void)updateMatrices{
     GLKVector3 lookAtDirection = GLKVector3Subtract(_lookAtPoint, _position);
     GLKVector3 camHoriVec = GLKVector3CrossProduct(GLKVector3Make(0, 1, 0), lookAtDirection);
