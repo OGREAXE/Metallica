@@ -138,7 +138,7 @@
     [_camera lookAt:GLKVector3Make(0, 0, 0)];
     
     _sun = [[MCDirectionalLight alloc] init];
-    _sun.position = GLKVector3Make(0.01, 2.2, 0.01);
+    _sun.position = GLKVector3Make(0.01, 2.2, 1);
     [_sun lookAt:GLKVector3Make(0, 0, 0)];
     
     {
@@ -433,6 +433,19 @@
     UIImage *image = [UIImage imageWithCGImage:imageRef];
     CGImageRelease(imageRef);
     _depthRevealView.image = image;
+}
+
+- (void)updateSunPosition:(CGFloat)x y:(CGFloat)y z:(CGFloat)z{
+    if (x == 0) {
+        x = 0.0001;
+    }
+    if (y == 0) {
+        y = 0.0001;
+    }
+    if (z == 0) {
+        z = 0.0001;
+    }
+    _sun.position = GLKVector3Make(x, y, z);
 }
 
 @end

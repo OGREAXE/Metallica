@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)renderView;
 
+- (void)updateSunPosition:(CGFloat)x y:(CGFloat)y z:(CGFloat)z;
+
 @end
 
 NS_ASSUME_NONNULL_END
