@@ -15,13 +15,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MCDirectionalLight : NSObject
 
-@property (nonatomic) GLKVector3 direction;
+@property (nonatomic) GLKVector3 position;
+
+//@property (nonatomic) GLKVector3 up;
+
+@property (nonatomic, readonly) GLKVector3 lookAtPoint;
 
 @property (nonatomic) UIColor *color;
 
 @property (nonatomic) id<MTLTexture> shadowMap;
 
 @property (nonatomic) MCSceneMatrices matrices;
+
+- (void)lookAt:(GLKVector3)point;
 
 - (void)updateMatrices;
 

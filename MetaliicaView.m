@@ -127,9 +127,8 @@
     [_camera lookAt:GLKVector3Make(0, 0, 0)];
     
     _sun = [[MCDirectionalLight alloc] init];
-    _sun.direction = GLKVector3Make(-1, -2.2, -1);
-    _sun.direction = GLKVector3Make(0.01, -2.2, 0.01);
-//    _sun.direction = GLKVector3Make(0.1, -2, 2.5);
+    _sun.position = GLKVector3Make(0.01, 2.2, 0.01);
+    [_sun lookAt:GLKVector3Make(0, 0, 0)];
     
     {
         MTLTextureDescriptor *shadowTextureDesc =
