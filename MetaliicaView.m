@@ -51,6 +51,10 @@
 
 @property (nonatomic) MCSceneUniform currentUniform;
 
+@property (nonatomic) UIImageView *depthRevealView;
+
+@property (nonatomic) float *depthBuf;
+
 @end
 
 @implementation MetaliicaView
@@ -59,6 +63,13 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self initMetalContext];
+        
+        UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 60, 200, 200)];
+        imgView.backgroundColor = [UIColor blackColor];
+        [self addSubview:imgView];
+        
+        _depthRevealView = imgView;
+        _depthBuf = (float *)malloc(sizeof(float) * 2048  * 2048);
     }
     
     return self;
@@ -378,15 +389,14 @@
 }
 
 - (void)debugDrawDepthMap{
-    {
-        GLKVector4 testV = GLKVector4Make(-1, 0, 1, 1); //578
-//        GLKVector4 testV = GLKVector4Make(0, 0, -3, 1); //584
-        GLKVector4 testV_mvp = GLKMatrix4MultiplyVector4(_sun.matrices.modelviewMatrix, testV);
-        GLKVector4 testV_ndc = GLKMatrix4MultiplyVector4(_sun.matrices.projectionMatrix, testV_mvp);
-        NSLog(@"projected point is (%.5f, %.5f, %.5f, %.5f)", testV_ndc.x, testV_ndc.y, testV_ndc.z, testV_ndc.w);
-    }
+//    {
+//        GLKVector4 testV = GLKVector4Make(-1, 0, 1, 1); //578
+////        GLKVector4 testV = GLKVector4Make(0, 0, -3, 1); //584
+//        GLKVector4 testV_mvp = GLKMatrix4MultiplyVector4(_sun.matrices.modelviewMatrix, testV);
+//        GLKVector4 testV_ndc = GLKMatrix4MultiplyVector4(_sun.matrices.projectionMatrix, testV_mvp);
+//    }
     //depth
-    float *depthBuf = (float *)malloc(sizeof(float) * 2048  * 2048);
+    float *depthBuf = _depthBuf;
     memset(depthBuf, 0, sizeof(float) * 2048  * 2048);
 
     [_sun.shadowMap getBytes:depthBuf bytesPerRow:sizeof(float) * 2048 fromRegion:MTLRegionMake2D(0, 0, 2048, 2048) mipmapLevel:0];
@@ -402,7 +412,7 @@
         }
     }
     
-    NSLog(@"max depth is %.5f, min depth is %.5f", maxDetpth, minDepth);
+//    NSLog(@"max depth is %.5f, min depth is %.5f", maxDetpth, minDepth);
     
     for (int i = 0; i < 2048 * 2048; i++) {
         if (YES /*depthBuf[i] != 0 && depthBuf[i] != 1*/) {
@@ -421,10 +431,8 @@
     
     CGImageRef imageRef = [self imageRefFromBGRABytes:(unsigned char *)depthBuf imageSize:CGSizeMake(2048, 2048)];
     UIImage *image = [UIImage imageWithCGImage:imageRef];
-    UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 60, 200, 200)];
-    imgView.image = image;
-    imgView.backgroundColor = [UIColor blackColor];
-    [self addSubview:imgView];
+    CGImageRelease(imageRef);
+    _depthRevealView.image = image;
 }
 
 @end

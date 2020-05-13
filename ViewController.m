@@ -24,6 +24,10 @@
     
     _mtView = [[MetaliicaView alloc] initWithFrame:self.view.bounds];
     [self.view addSubview:_mtView];
+    
+    CADisplayLink *dLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayUpdate)];
+    
+    [dLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 }
 
 - (void)viewWillAppear:(BOOL)animated{
@@ -35,5 +39,8 @@
     [_mtView renderView];
 }
 
+- (void)displayUpdate{
+    [_mtView renderView];
+}
 
 @end
