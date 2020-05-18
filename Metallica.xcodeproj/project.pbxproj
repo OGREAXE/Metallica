@@ -1,0 +1,624 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D40F83652456DE4D0033532C /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D40F83642456DE4D0033532C /* AppDelegate.m */; };
+		D40F83682456DE4D0033532C /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D40F83672456DE4D0033532C /* SceneDelegate.m */; };
+		D40F836B2456DE4D0033532C /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D40F836A2456DE4D0033532C /* ViewController.m */; };
+		D40F836E2456DE4D0033532C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D40F836C2456DE4D0033532C /* Main.storyboard */; };
+		D40F83702456DE520033532C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D40F836F2456DE520033532C /* Assets.xcassets */; };
+		D40F83732456DE520033532C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D40F83712456DE520033532C /* LaunchScreen.storyboard */; };
+		D40F83762456DE520033532C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D40F83752456DE520033532C /* main.m */; };
+		D40F83802456DE520033532C /* MetallicaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D40F837F2456DE520033532C /* MetallicaTests.m */; };
+		D40F838B2456DE520033532C /* MetallicaUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = D40F838A2456DE520033532C /* MetallicaUITests.m */; };
+		D40F839A2456DF0A0033532C /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D40F83992456DF0A0033532C /* Metal.framework */; };
+		D40F839D2456DF620033532C /* MetaliicaView.m in Sources */ = {isa = PBXBuildFile; fileRef = D40F839C2456DF620033532C /* MetaliicaView.m */; };
+		D40F839F245708500033532C /* shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = D40F839E245708500033532C /* shader.metal */; };
+		F313D51D245978B900E15E21 /* MCCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = F313D51C245978B900E15E21 /* MCCamera.m */; };
+		F313D520245D5BDE00E15E21 /* MCDirectionalLight.m in Sources */ = {isa = PBXBuildFile; fileRef = F313D51F245D5BDE00E15E21 /* MCDirectionalLight.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D40F837C2456DE520033532C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40F83582456DE4D0033532C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D40F835F2456DE4D0033532C;
+			remoteInfo = Metallica;
+		};
+		D40F83872456DE520033532C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D40F83582456DE4D0033532C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D40F835F2456DE4D0033532C;
+			remoteInfo = Metallica;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		D40F83602456DE4D0033532C /* Metallica.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Metallica.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D40F83632456DE4D0033532C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		D40F83642456DE4D0033532C /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		D40F83662456DE4D0033532C /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
+		D40F83672456DE4D0033532C /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
+		D40F83692456DE4D0033532C /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		D40F836A2456DE4D0033532C /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		D40F836D2456DE4D0033532C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		D40F836F2456DE520033532C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D40F83722456DE520033532C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		D40F83742456DE520033532C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D40F83752456DE520033532C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		D40F837B2456DE520033532C /* MetallicaTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MetallicaTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D40F837F2456DE520033532C /* MetallicaTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MetallicaTests.m; sourceTree = "<group>"; };
+		D40F83812456DE520033532C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D40F83862456DE520033532C /* MetallicaUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MetallicaUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D40F838A2456DE520033532C /* MetallicaUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MetallicaUITests.m; sourceTree = "<group>"; };
+		D40F838C2456DE520033532C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D40F83992456DF0A0033532C /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		D40F839B2456DF620033532C /* MetaliicaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetaliicaView.h; sourceTree = "<group>"; };
+		D40F839C2456DF620033532C /* MetaliicaView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MetaliicaView.m; sourceTree = "<group>"; };
+		D40F839E245708500033532C /* shader.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shader.metal; sourceTree = "<group>"; };
+		F313D51B245978B900E15E21 /* MCCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MCCamera.h; sourceTree = "<group>"; };
+		F313D51C245978B900E15E21 /* MCCamera.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCCamera.m; sourceTree = "<group>"; };
+		F313D51E245D5BDE00E15E21 /* MCDirectionalLight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MCDirectionalLight.h; sourceTree = "<group>"; };
+		F313D51F245D5BDE00E15E21 /* MCDirectionalLight.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCDirectionalLight.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D40F835D2456DE4D0033532C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D40F839A2456DF0A0033532C /* Metal.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D40F83782456DE520033532C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D40F83832456DE520033532C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		D40F83572456DE4D0033532C = {
+			isa = PBXGroup;
+			children = (
+				D40F83622456DE4D0033532C /* Metallica */,
+				D40F837E2456DE520033532C /* MetallicaTests */,
+				D40F83892456DE520033532C /* MetallicaUITests */,
+				D40F83612456DE4D0033532C /* Products */,
+				D40F83982456DF090033532C /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		D40F83612456DE4D0033532C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D40F83602456DE4D0033532C /* Metallica.app */,
+				D40F837B2456DE520033532C /* MetallicaTests.xctest */,
+				D40F83862456DE520033532C /* MetallicaUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D40F83622456DE4D0033532C /* Metallica */ = {
+			isa = PBXGroup;
+			children = (
+				D40F83632456DE4D0033532C /* AppDelegate.h */,
+				D40F83642456DE4D0033532C /* AppDelegate.m */,
+				D40F83662456DE4D0033532C /* SceneDelegate.h */,
+				D40F83672456DE4D0033532C /* SceneDelegate.m */,
+				D40F83692456DE4D0033532C /* ViewController.h */,
+				D40F836A2456DE4D0033532C /* ViewController.m */,
+				D40F836C2456DE4D0033532C /* Main.storyboard */,
+				D40F836F2456DE520033532C /* Assets.xcassets */,
+				D40F83712456DE520033532C /* LaunchScreen.storyboard */,
+				D40F83742456DE520033532C /* Info.plist */,
+				D40F83752456DE520033532C /* main.m */,
+				D40F839B2456DF620033532C /* MetaliicaView.h */,
+				D40F839C2456DF620033532C /* MetaliicaView.m */,
+				D40F839E245708500033532C /* shader.metal */,
+				F313D51B245978B900E15E21 /* MCCamera.h */,
+				F313D51C245978B900E15E21 /* MCCamera.m */,
+				F313D51E245D5BDE00E15E21 /* MCDirectionalLight.h */,
+				F313D51F245D5BDE00E15E21 /* MCDirectionalLight.m */,
+			);
+			path = Metallica;
+			sourceTree = "<group>";
+		};
+		D40F837E2456DE520033532C /* MetallicaTests */ = {
+			isa = PBXGroup;
+			children = (
+				D40F837F2456DE520033532C /* MetallicaTests.m */,
+				D40F83812456DE520033532C /* Info.plist */,
+			);
+			path = MetallicaTests;
+			sourceTree = "<group>";
+		};
+		D40F83892456DE520033532C /* MetallicaUITests */ = {
+			isa = PBXGroup;
+			children = (
+				D40F838A2456DE520033532C /* MetallicaUITests.m */,
+				D40F838C2456DE520033532C /* Info.plist */,
+			);
+			path = MetallicaUITests;
+			sourceTree = "<group>";
+		};
+		D40F83982456DF090033532C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D40F83992456DF0A0033532C /* Metal.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		D40F835F2456DE4D0033532C /* Metallica */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D40F838F2456DE520033532C /* Build configuration list for PBXNativeTarget "Metallica" */;
+			buildPhases = (
+				D40F835C2456DE4D0033532C /* Sources */,
+				D40F835D2456DE4D0033532C /* Frameworks */,
+				D40F835E2456DE4D0033532C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Metallica;
+			productName = Metallica;
+			productReference = D40F83602456DE4D0033532C /* Metallica.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D40F837A2456DE520033532C /* MetallicaTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D40F83922456DE520033532C /* Build configuration list for PBXNativeTarget "MetallicaTests" */;
+			buildPhases = (
+				D40F83772456DE520033532C /* Sources */,
+				D40F83782456DE520033532C /* Frameworks */,
+				D40F83792456DE520033532C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D40F837D2456DE520033532C /* PBXTargetDependency */,
+			);
+			name = MetallicaTests;
+			productName = MetallicaTests;
+			productReference = D40F837B2456DE520033532C /* MetallicaTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		D40F83852456DE520033532C /* MetallicaUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D40F83952456DE520033532C /* Build configuration list for PBXNativeTarget "MetallicaUITests" */;
+			buildPhases = (
+				D40F83822456DE520033532C /* Sources */,
+				D40F83832456DE520033532C /* Frameworks */,
+				D40F83842456DE520033532C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D40F83882456DE520033532C /* PBXTargetDependency */,
+			);
+			name = MetallicaUITests;
+			productName = MetallicaUITests;
+			productReference = D40F83862456DE520033532C /* MetallicaUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D40F83582456DE4D0033532C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1140;
+				ORGANIZATIONNAME = "Liang,Zhiyuan(MTD)";
+				TargetAttributes = {
+					D40F835F2456DE4D0033532C = {
+						CreatedOnToolsVersion = 11.4;
+					};
+					D40F837A2456DE520033532C = {
+						CreatedOnToolsVersion = 11.4;
+						TestTargetID = D40F835F2456DE4D0033532C;
+					};
+					D40F83852456DE520033532C = {
+						CreatedOnToolsVersion = 11.4;
+						TestTargetID = D40F835F2456DE4D0033532C;
+					};
+				};
+			};
+			buildConfigurationList = D40F835B2456DE4D0033532C /* Build configuration list for PBXProject "Metallica" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = D40F83572456DE4D0033532C;
+			productRefGroup = D40F83612456DE4D0033532C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D40F835F2456DE4D0033532C /* Metallica */,
+				D40F837A2456DE520033532C /* MetallicaTests */,
+				D40F83852456DE520033532C /* MetallicaUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D40F835E2456DE4D0033532C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D40F83732456DE520033532C /* LaunchScreen.storyboard in Resources */,
+				D40F83702456DE520033532C /* Assets.xcassets in Resources */,
+				D40F836E2456DE4D0033532C /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D40F83792456DE520033532C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D40F83842456DE520033532C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D40F835C2456DE4D0033532C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D40F836B2456DE4D0033532C /* ViewController.m in Sources */,
+				D40F83652456DE4D0033532C /* AppDelegate.m in Sources */,
+				D40F839D2456DF620033532C /* MetaliicaView.m in Sources */,
+				F313D51D245978B900E15E21 /* MCCamera.m in Sources */,
+				D40F83762456DE520033532C /* main.m in Sources */,
+				F313D520245D5BDE00E15E21 /* MCDirectionalLight.m in Sources */,
+				D40F839F245708500033532C /* shader.metal in Sources */,
+				D40F83682456DE4D0033532C /* SceneDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D40F83772456DE520033532C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D40F83802456DE520033532C /* MetallicaTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D40F83822456DE520033532C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D40F838B2456DE520033532C /* MetallicaUITests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D40F837D2456DE520033532C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D40F835F2456DE4D0033532C /* Metallica */;
+			targetProxy = D40F837C2456DE520033532C /* PBXContainerItemProxy */;
+		};
+		D40F83882456DE520033532C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D40F835F2456DE4D0033532C /* Metallica */;
+			targetProxy = D40F83872456DE520033532C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		D40F836C2456DE4D0033532C /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D40F836D2456DE4D0033532C /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		D40F83712456DE520033532C /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				D40F83722456DE520033532C /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		D40F838D2456DE520033532C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		D40F838E2456DE520033532C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		D40F83902456DE520033532C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = KLS72L88F6;
+				INFOPLIST_FILE = Metallica/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "-1.Metallica";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = 20200107New;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D40F83912456DE520033532C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = KLS72L88F6;
+				INFOPLIST_FILE = Metallica/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "-1.Metallica";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = 20200107New;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D40F83932456DE520033532C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = MetallicaTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "-1.MetallicaTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Metallica.app/Metallica";
+			};
+			name = Debug;
+		};
+		D40F83942456DE520033532C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = MetallicaTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "-1.MetallicaTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Metallica.app/Metallica";
+			};
+			name = Release;
+		};
+		D40F83962456DE520033532C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = MetallicaUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "-1.MetallicaUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Metallica;
+			};
+			name = Debug;
+		};
+		D40F83972456DE520033532C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = MetallicaUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "-1.MetallicaUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Metallica;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D40F835B2456DE4D0033532C /* Build configuration list for PBXProject "Metallica" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D40F838D2456DE520033532C /* Debug */,
+				D40F838E2456DE520033532C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D40F838F2456DE520033532C /* Build configuration list for PBXNativeTarget "Metallica" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D40F83902456DE520033532C /* Debug */,
+				D40F83912456DE520033532C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D40F83922456DE520033532C /* Build configuration list for PBXNativeTarget "MetallicaTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D40F83932456DE520033532C /* Debug */,
+				D40F83942456DE520033532C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D40F83952456DE520033532C /* Build configuration list for PBXNativeTarget "MetallicaUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D40F83962456DE520033532C /* Debug */,
+				D40F83972456DE520033532C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D40F83582456DE4D0033532C /* Project object */;
+}
