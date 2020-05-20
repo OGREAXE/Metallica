@@ -21,6 +21,7 @@
 		D40F839F245708500033532C /* shader.metal in Sources */ = {isa = PBXBuildFile; fileRef = D40F839E245708500033532C /* shader.metal */; };
 		F313D51D245978B900E15E21 /* MCCamera.m in Sources */ = {isa = PBXBuildFile; fileRef = F313D51C245978B900E15E21 /* MCCamera.m */; };
 		F313D520245D5BDE00E15E21 /* MCDirectionalLight.m in Sources */ = {isa = PBXBuildFile; fileRef = F313D51F245D5BDE00E15E21 /* MCDirectionalLight.m */; };
+		F3D37452247509FB00E40162 /* MMTKView.m in Sources */ = {isa = PBXBuildFile; fileRef = F3D37451247509FB00E40162 /* MMTKView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,8 @@
 		F313D51C245978B900E15E21 /* MCCamera.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCCamera.m; sourceTree = "<group>"; };
 		F313D51E245D5BDE00E15E21 /* MCDirectionalLight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MCDirectionalLight.h; sourceTree = "<group>"; };
 		F313D51F245D5BDE00E15E21 /* MCDirectionalLight.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCDirectionalLight.m; sourceTree = "<group>"; };
+		F3D37450247509FB00E40162 /* MMTKView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MMTKView.h; sourceTree = "<group>"; };
+		F3D37451247509FB00E40162 /* MMTKView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MMTKView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +140,8 @@
 				F313D51C245978B900E15E21 /* MCCamera.m */,
 				F313D51E245D5BDE00E15E21 /* MCDirectionalLight.h */,
 				F313D51F245D5BDE00E15E21 /* MCDirectionalLight.m */,
+				F3D37450247509FB00E40162 /* MMTKView.h */,
+				F3D37451247509FB00E40162 /* MMTKView.m */,
 			);
 			path = Metallica;
 			sourceTree = "<group>";
@@ -303,6 +308,7 @@
 				F313D51D245978B900E15E21 /* MCCamera.m in Sources */,
 				D40F83762456DE520033532C /* main.m in Sources */,
 				F313D520245D5BDE00E15E21 /* MCDirectionalLight.m in Sources */,
+				F3D37452247509FB00E40162 /* MMTKView.m in Sources */,
 				D40F839F245708500033532C /* shader.metal in Sources */,
 				D40F83682456DE4D0033532C /* SceneDelegate.m in Sources */,
 			);
@@ -409,7 +415,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -461,7 +467,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;

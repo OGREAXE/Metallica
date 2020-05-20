@@ -73,7 +73,10 @@ fragment float4 fragmentShader(VertexOut in [[stage_in]],
     float shadow_sample = shadowMap.sample_compare(shadowSampler, shadowUV, in.shadow_coord.z);
     
 //    return in.color * shadow_sample;
-    if (shadow_sample == 0) return in.color * 0.5;
+//    if (shadow_sample == 0) return in.color * 0.5;
+    
+    if (shadow_sample == 0) return float4(in.color.rgb * 0.5, in.color.a);
+    
     return in.color;
 }
 

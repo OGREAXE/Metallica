@@ -1,23 +1,23 @@
 //
-//  MetaliicaView.m
+//  MMTKView.m
 //  Metallica
 //
-//  Created by Liang,Zhiyuan(MTD) on 2020/4/27.
+//  Created by Liang,Zhiyuan(GIS)2 on 2020/5/20.
 //  Copyright © 2020 Liang,Zhiyuan(MTD). All rights reserved.
 //
 
-#import "MetaliicaView.h"
+#import "MMTKView.h"
 #import <Metal/Metal.h>
 #import <GLKit/GLKit.h>
 #import "MCCamera.h"
 #import <math.h>
 #import "MCDirectionalLight.h"
 
-@interface MetaliicaView()
+@interface MMTKView()
 
-@property (nonatomic) CAMetalLayer *metalLayer;
+//@property (nonatomic) CAMetalLayer *metalLayer;
 
-@property (nonatomic) id<MTLDevice> metalDevice;
+//@property (nonatomic) id<MTLDevice> metalDevice;
 
 @property (nonatomic) id<MTLCommandQueue> mtlCommandQueue;
 
@@ -35,7 +35,7 @@
 
 @property (nonatomic) id<MTLBuffer> uniformBuffer;
 
-@property (nonatomic) id<CAMetalDrawable> frameDrawable;
+//@property (nonatomic) id<CAMetalDrawable> frameDrawable;
 
 @property (nonatomic) id<MTLTexture> depthTexture;
 
@@ -57,7 +57,7 @@
 
 @end
 
-@implementation MetaliicaView
+@implementation MMTKView
 
 - (id)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
@@ -75,10 +75,10 @@
     return self;
 }
 
+/// <#Description#>
 - (void)initMetalContext{
-//    [self.layer addSublayer:self.metalLayer];
-    
-    id<MTLDevice> mtlDevice = self.metalDevice;
+    self.device = MTLCreateSystemDefaultDevice();
+    id<MTLDevice> mtlDevice = self.device;
     
     _mtlCommandQueue = [mtlDevice newCommandQueue];
 
@@ -97,6 +97,11 @@
 //        mtlRenderPipelineDescriptor.colorAttachments[0].blendingEnabled = YES;
 //        mtlRenderPipelineDescriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
 //        mtlRenderPipelineDescriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+//        mtlRenderPipelineDescriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorDestinationAlpha;
+//        mtlRenderPipelineDescriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorSourceAlpha;
+//        mtlRenderPipelineDescriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceColor;
+//        mtlRenderPipelineDescriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorDestinationAlpha;
+ 
         mtlRenderPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatDepth32Float;
 
         _renderPipelineState = [mtlDevice newRenderPipelineStateWithDescriptor:mtlRenderPipelineDescriptor error:nil];
@@ -154,7 +159,7 @@
         shadowTextureDesc.resourceOptions = MTLResourceStorageModeShared;
         shadowTextureDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
         
-        _sun.shadowMap = [self.metalDevice newTextureWithDescriptor:shadowTextureDesc];
+        _sun.shadowMap = [self.device newTextureWithDescriptor:shadowTextureDesc];
         _sun.shadowMap.label = @"Shadow Map";
     }
     
@@ -168,18 +173,22 @@
         depthTextureDesc.resourceOptions = MTLResourceStorageModePrivate;
         depthTextureDesc.usage = MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
         
-        _depthTexture = [self.metalDevice newTextureWithDescriptor:depthTextureDesc];
+        _depthTexture = [self.device newTextureWithDescriptor:depthTextureDesc];
         _depthTexture.label = @"depth texture";
     }
+    
+    //this 2 line makes background transparent so that views beneath this view are visible
+    self.backgroundColor = [UIColor clearColor];
+    self.clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
 }
 
 - (void)renderView{
     id<MTLCommandBuffer> commandBuffer = [_mtlCommandQueue commandBuffer];
     
-    [self drawDirectionalLight:commandBuffer];
+//    [self drawDirectionalLight:commandBuffer];
     
     [self drawPlanes:commandBuffer];
-    [commandBuffer presentDrawable:_frameDrawable];
+    [commandBuffer presentDrawable:self.currentDrawable];
     
     [commandBuffer commit];
     
@@ -227,18 +236,16 @@
     [encoder endEncoding];
 }
 
-+ (Class)layerClass{
-    return [CAMetalLayer class];
-}
-
 - (void)drawPlanes:(id<MTLCommandBuffer>)mtlCommandBuffer{
-    _frameDrawable = [self.metalLayer nextDrawable];
+//    _frameDrawable = [_metalLayer nextDrawable];
     
-    MTLRenderPassDescriptor *mtlRenderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
-    mtlRenderPassDescriptor.colorAttachments[0].texture = _frameDrawable.texture;
-    mtlRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-    mtlRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.0, 0.0, 0.0, 0.0);
-    mtlRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+//    MTLRenderPassDescriptor *mtlRenderPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+//    mtlRenderPassDescriptor.colorAttachments[0].texture = _frameDrawable.texture;
+    
+    MTLRenderPassDescriptor *mtlRenderPassDescriptor = self.currentRenderPassDescriptor;
+//    mtlRenderPassDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+//    mtlRenderPassDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(1.0, 1.0, 1.0, 0.0);
+//    mtlRenderPassDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
     
     mtlRenderPassDescriptor.depthAttachment.texture = _depthTexture;
     
@@ -326,11 +333,11 @@
 }
 
 - (void)createBufferWithVertices:(float *)vertices colors:(float *)colors length:(int)length{
-    _vertexBuffer = [_metalDevice newBufferWithBytes:vertices length:length options:MTLResourceOptionCPUCacheModeDefault];
+    _vertexBuffer = [self.device newBufferWithBytes:vertices length:length options:MTLResourceOptionCPUCacheModeDefault];
     
-    _colorBuffer = [_metalDevice newBufferWithBytes:colors length:length options:MTLResourceOptionCPUCacheModeDefault];
+    _colorBuffer = [self.device newBufferWithBytes:colors length:length options:MTLResourceOptionCPUCacheModeDefault];
     
-    _uniformBuffer = [_metalDevice newBufferWithBytes:&_currentUniform length:sizeof(_currentUniform) options:MTLResourceOptionCPUCacheModeDefault];
+    _uniformBuffer = [self.device newBufferWithBytes:&_currentUniform length:sizeof(_currentUniform) options:MTLResourceOptionCPUCacheModeDefault];
 }
 
 - (void)render:(id<MTLRenderCommandEncoder>)renderEncoder{
@@ -359,43 +366,13 @@
 //    [mtlCommandBuffer commit];
 }
 
-- (CAMetalLayer *)metalLayer{
-    if (!_metalLayer) {
-        id<MTLDevice> device = self.metalDevice;
-//        CAMetalLayer *metalLayer = [CAMetalLayer layer];
-        CAMetalLayer *metalLayer = (CAMetalLayer *)self.layer;
-        
-        metalLayer.device = device;
-        metalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-        metalLayer.framebufferOnly = YES;
-        
-        metalLayer.frame = self.layer.frame;
-        CGSize drawableSize = self.bounds.size;
-        drawableSize.width *= self.contentScaleFactor;
-        drawableSize.height *= self.contentScaleFactor;
-        metalLayer.drawableSize = drawableSize;
-        
-//        _metalLayer.backgroundFilters = nil;
-        self.layer.backgroundColor = [UIColor clearColor].CGColor;
-        self.layer.opaque = NO;
-        _metalLayer.backgroundColor = [UIColor clearColor].CGColor;
-        _metalLayer.opaque = NO;
-        self.backgroundColor = [UIColor clearColor];
-        self.opaque = NO;
-        
-        _metalLayer =  metalLayer;
-    }
-    
-    return _metalLayer;;
-}
-
-- (id<MTLDevice>)metalDevice{
-    if (!_metalDevice) {
-        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
-        _metalDevice = device;
-    }
-    return _metalDevice;
-}
+//- (id<MTLDevice>)metalDevice{
+//    if (!_metalDevice) {
+//        id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+//        _metalDevice = device;
+//    }
+//    return _metalDevice;
+//}
 
 - (void)debugDrawDepthMap{
 //    {

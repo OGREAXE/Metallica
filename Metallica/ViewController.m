@@ -10,12 +10,19 @@
 #import "MetaliicaView.h"
 #import <Metal/Metal.h>
 #import <GLKit/GLKit.h>
+#import "MMTKView.h"
 
 @interface ViewController ()
 
 @property (nonatomic) MetaliicaView *mtView;
 
+@property (nonatomic) MMTKView *mmtkView;
+
+@property (nonatomic) UIImageView *backgroundImageView;
+
 @end
+
+BOOL kUseMTKView = NO;
 
 @implementation ViewController
 
@@ -23,7 +30,24 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
+    self.view.backgroundColor = [UIColor yellowColor];
+    
+    if (kUseMTKView) {
+        [self createMMTKView];
+    }
+    else {
+        [self createMetallicaView];
+    }
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"fallout"]];
+    [self.view addSubview:imageView];
+    _backgroundImageView = imageView;
+    [self.view sendSubviewToBack:imageView];
+}
+
+- (void)createMetallicaView{
     _mtView = [[MetaliicaView alloc] initWithFrame:self.view.bounds];
+    _mtView.backgroundColor = [UIColor clearColor];
     [self.view addSubview:_mtView];
     
     CADisplayLink *dLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(displayUpdate)];
@@ -31,13 +55,26 @@
     [dLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
 }
 
+- (void)createMMTKView{
+    _mmtkView = [[MMTKView alloc] initWithFrame:self.view.bounds];
+    [self.view addSubview:_mmtkView];
+}
+
 - (void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
     _mtView.frame = self.view.bounds;
-//    [_mtView drawPlanes];
+    _mmtkView.frame = self.view.bounds;
     
-    [_mtView renderView];
+    if (kUseMTKView) {
+        [_mmtkView renderView];
+    } else {
+        [_mtView renderView];
+    }
+    
+//    [_mmtkView renderView];
+    
+    _backgroundImageView.frame = self.view.bounds;
 }
 
 float rotAngle = 0;
